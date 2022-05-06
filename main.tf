@@ -37,3 +37,9 @@ module "ecs" {
   source = "./modules/ecs"
 }
 
+#module "cloudfront" {
+#  depends_on = [module.ecs, module.elb]
+#  elbDomain  = module.elb.elbDomain
+#  source = "./modules/cloudfront"
+#}
+

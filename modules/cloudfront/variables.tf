@@ -1,0 +1,3 @@
+variable "elbDomain" {
+  type = string
+}
