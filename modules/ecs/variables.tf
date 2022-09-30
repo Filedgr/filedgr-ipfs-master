@@ -14,6 +14,10 @@ variable "ipfsTargetGroup" {
   type = string
 }
 
+#variable "apiTargetGroup" {
+#  type = string
+#}
+
 variable "securityGroupId" {
   type = string
 }

@@ -10,7 +10,7 @@ resource "aws_ecs_service" "filedgr-ipfs-ecs-service" {
   desired_count = 1
   launch_type   = "FARGATE"
   network_configuration {
-    subnets = [var.ipfs_subnet]
+    subnets         = [var.ipfs_subnet]
     security_groups = [var.securityGroupId]
   }
 
@@ -24,6 +24,11 @@ resource "aws_ecs_service" "filedgr-ipfs-ecs-service" {
     container_port   = 4001
     target_group_arn = var.ipfsTargetGroup
   }
+  #    load_balancer {
+  #    container_name   = "ipfs-container"
+  #    container_port   = 5001
+  #    target_group_arn = var.apiTargetGroup
+  #  }
 }
 
 resource "aws_ecs_cluster_capacity_providers" "filedgr-fargate-capacity-provider" {
@@ -41,7 +46,12 @@ resource "aws_ecs_task_definition" "filedgr-ipfs-gateway-task" {
   family                = "service"
   container_definitions = jsonencode([
     {
-      name         = "ipfs-container"
+      name = "ipfs-container"
+      environment : [
+#        { name = "IPFS_SWARM_KEY", value = "/key/swarm/psk/1.0.0/\n/base16/\nf14e252ab6d0523c4d4a1651fb4828edcbce42e1837f2acbe715c7b73da52bcb" },
+#        { name = "IPFS_PROFILE", value = "server"},
+        { name = "LIBP2P_FORCE_PNET", value = "1"}
+      ],
       image        = var.ecr_ipfs_image
       cpu          = 2
       memory       = 4096
@@ -60,6 +70,14 @@ resource "aws_ecs_task_definition" "filedgr-ipfs-gateway-task" {
           hostPort      = 4001
         }
       ]
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group = aws_cloudwatch_log_group.ipfs-logs.name
+          awslogs-region = "eu-central-1"
+          awslogs-stream-prefix = "ecs"
+        }
+      }
     }
   ])
   execution_role_arn       = aws_iam_role.filedgr-ipfs-ecs-task-execution.arn
@@ -94,6 +112,15 @@ data "aws_iam_policy_document" "ecs_execution_policy" {
     ]
     resources = ["*"]
     effect    = "Allow"
+  }
+}
+
+resource "aws_cloudwatch_log_group" "ipfs-logs" {
+    name = "ipfs-logs"
+
+  tags = {
+    Environment = "dev"
+    Application = "ipfs-filedgr"
   }
 }
 

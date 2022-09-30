@@ -31,6 +31,7 @@ module "ecs" {
   ipfs_subnet    = var.privSubnetId
 
   webTargetGroup = module.elb.webTargetGroupArn
+#  apiTargetGroup = module.elb.apiTargetGroupArn
   ipfsTargetGroup = module.elb.ipfsTargetGroupArn
   securityGroupId = var.securityGroupId
 

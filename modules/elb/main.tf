@@ -6,6 +6,14 @@ resource "aws_lb_target_group" "filedgr-ipfs-gateway-web" {
   vpc_id      = var.vpcId
 }
 
+#resource "aws_lb_target_group" "filedgr-ipfs-gateway-api" {
+#  target_type = "ip"
+#  name        = "filedgr-ipfs-gateway-api"
+#  port        = 5001
+#  protocol    = "TCP"
+#  vpc_id      = var.vpcId
+#}
+
 resource "aws_lb_target_group" "filedgr-ipfs-gateway-ipfs" {
   target_type = "ip"
   name        = "filedgr-ipfs-gateway-ipfs"
@@ -44,3 +52,13 @@ resource "aws_lb_listener" "ipfs" {
   }
 }
 
+#resource "aws_lb_listener" "api" {
+#  load_balancer_arn = aws_lb.ipfs-gateway-lb.arn
+#  port              = 5001
+#  protocol          = "TCP"
+#
+#  default_action {
+#    type             = "forward"
+#    target_group_arn = aws_lb_target_group.filedgr-ipfs-gateway-api.arn
+#  }
+#}
